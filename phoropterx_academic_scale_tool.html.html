@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Phoropter Service Checkup | PhoropterX</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="Real-world scale to help you know when your phoropter needs service.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f8f9fa;
+            color: #222;
+            max-width: 700px;
+            margin: auto;
+            padding: 30px 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        label {
+            margin-top: 20px;
+            display: block;
+            font-weight: bold;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        button {
+            background-color: #ff6600;
+            color: white;
+            font-weight: bold;
+            border: none;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #e65c00;
+        }
+        #result {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #eef2f7;
+            border-left: 5px solid #ff6600;
+            border-radius: 6px;
+            font-size: 1.05rem;
+            display: none;
+        }
+        .book-link {
+            display: none;
+            text-align: center;
+            margin-top: 25px;
+        }
+        .book-link a {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        .book-link a:hover {
+            background-color: #0056b3;
+        }
+        .checklist {
+            margin-top: 30px;
+            background: #fff;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        .checklist h3 {
+            margin-top: 0;
+        }
+        .checklist ul {
+            padding-left: 20px;
+        }
+        .checklist li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Phoropter Service Checkup</h1>
+    <p style="text-align:center; margin-bottom: 30px;">A real-world service guide to help you know when to schedule your next cleaning and tune-up.</p>
+
+    <form id="checklistForm">
+        <label for="patientsPerDay">How many patients use this phoropter daily?</label>
+        <input type="number" id="patientsPerDay" required>
+
+        <label for="lastService">When was the last professional service? (months ago)</label>
+        <input type="number" id="lastService" required>
+
+        <label for="lensScore">Rate what you see through the lens when shining a light behind it (1 = crystal clear, 5 = hazy or filmy)</label>
+        <select id="lensScore">
+            <option value="1">1 – Clear as new</option>
+            <option value="2">2 – Slight specs</option>
+            <option value="3">3 – Noticeable dust</option>
+            <option value="4">4 – Slight film or haze</option>
+            <option value="5">5 – Significant haze/biofilm</option>
+        </select>
+
+        <label for="dialScore">How difficult do the dials feel when turning them? (1 = smooth, 5 = stiff/resistant)</label>
+        <select id="dialScore">
+            <option value="1">1 – Very smooth</option>
+            <option value="2">2 – Occasionally sticky</option>
+            <option value="3">3 – Some resistance</option>
+            <option value="4">4 – Noticeably stiff</option>
+            <option value="5">5 – Very hard to turn</option>
+        </select>
+
+        <button type="submit">Check My Phoropter</button>
+    </form>
+
+    <div id="result"></div>
+
+    <div class="book-link" id="bookLink">
+        <a href="https://phoropterx.com/contact" target="_blank">📅 Book Your Free Assessment</a>
+    </div>
+
+    <div class="checklist" id="checklist" style="display:none;">
+        <h3🔍 Quick DIY Checkpoints:</h3>
+        <ul>
+            <li>🔄 Rotate through the JCC — does it move freely and land evenly?</li>
+            <li>🔍 Inspect all lenses by shining light from behind — any smears or micro-spots?</li>
+            <li>🧭 Rotate all dials — including cylinder, axis, and sphere — check for tension or skips</li>
+            <li>🧼 Check for dust around knobs and nosepiece — it's often a red flag for internal buildup</li>
+        </ul>
+    </div>
+
+    <script>
+        document.getElementById('checklistForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const patients = parseInt(document.getElementById('patientsPerDay').value);
+            const lastService = parseInt(document.getElementById('lastService').value);
+            const lensScore = parseInt(document.getElementById('lensScore').value);
+            const dialScore = parseInt(document.getElementById('dialScore').value);
+
+            let risk = lensScore + dialScore;
+            let recMonths = 0;
+            let riskMsg = "";
+
+            if (risk <= 3) {
+                recMonths = 12;
+                riskMsg = "✅ Your phoropter appears to be in good shape. Next service recommended in about 12 months.";
+            } else if (risk <= 5) {
+                recMonths = 9;
+                riskMsg = "🟡 Some signs of wear or buildup. Consider scheduling a service within the next 9 months.";
+            } else if (risk <= 7) {
+                recMonths = 6;
+                riskMsg = "🟠 Moderate issues detected. We recommend a service within 6 months.";
+            } else {
+                recMonths = 3;
+                riskMsg = "🔴 Significant contamination or resistance. Schedule professional service ASAP — within 3 months.";
+            }
+
+            // Account for last service date
+            if (lastService > recMonths) {
+                riskMsg += " ⏰ Your last service was " + lastService + " months ago — you're already past the recommended window.";
+            }
+
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('result').innerText = riskMsg;
+            document.getElementById('bookLink').style.display = 'block';
+            document.getElementById('checklist').style.display = 'block';
+        });
+    </script>
+
+    <div class="fun-facts" style="margin-top: 40px; font-size: 0.9rem; color: #333; background: #fff; border: 1px solid #ccc; border-left: 5px solid #007bff; padding: 15px; border-radius: 5px;">
+        <h3>📚 Evidence-Based Insight:</h3>
+        <p>🧫 <strong>Biofilm can form within 24–48 hours</strong> on moist surfaces inside phoropters. Once established, it is highly resistant to disinfectants and mechanical cleaning. <em>(CDC, NIH)</em></p>
+        <p>🔬 Optical instruments not properly maintained have been shown to harbor <strong>Staphylococcus aureus, Pseudomonas, and Candida</strong>, which pose serious infection risks in clinical environments.</p>
+        <p>📖 Source: Donlan RM, Costerton JW. "Biofilms: survival mechanisms of clinically relevant microorganisms." <em>Clin Microbiol Rev</em>. 2002 Apr;15(2):167-93.</p>
+        <p>🧠 This checklist is built on measurable risk factors (optical clarity, mechanical resistance, time since service) — not just routine intervals — aligning with modern infection control strategies.</p>
+    </div>
+</body>
+</html>
+
+</html>
