@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Phoropter Service Scale | PhoropterX</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f8f9fa;
+            color: #222;
+            max-width: 700px;
+            margin: auto;
+            padding: 30px 20px;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        label {
+            margin-top: 20px;
+            display: block;
+            font-weight: bold;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        button {
+            background-color: #ff6600;
+            color: white;
+            font-weight: bold;
+            border: none;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #e65c00;
+        }
+        #result {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #eef2f7;
+            border-left: 5px solid #ff6600;
+            border-radius: 6px;
+            font-size: 1.05rem;
+            display: none;
+        }
+        .fun-facts {
+            margin-top: 40px;
+            font-size: 0.9rem;
+            color: #333;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-left: 5px solid #007bff;
+            padding: 15px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Phoropter Service Evaluation Tool</h1>
+    <p style="text-align:center;">A combined academic-grade scale for assessing phoropter lens condition, usage load, and maintenance needs.</p>
+
+    <form id="unifiedForm">
+        <label for="patientsPerDay">How many patients use this phoropter daily?</label>
+        <input type="number" id="patientsPerDay" required>
+
+        <label for="monthsSinceService">How many months ago was the last professional service?</label>
+        <input type="number" id="monthsSinceService" required>
+
+        <label for="lensClarity">On a scale of 1 to 10, how clear are your lenses? (1 = crystal clear, 10 = heavily fogged/dirty)</label>
+        <select id="lensClarity">
+            <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option>
+        </select>
+
+        <label for="dialResistance">Rate dial resistance (1 = very smooth, 5 = very stiff)</label>
+        <select id="dialResistance">
+            <option value="1">1 – Very smooth</option>
+            <option value="2">2 – Occasionally sticky</option>
+            <option value="3">3 – Some resistance</option>
+            <option value="4">4 – Noticeably stiff</option>
+            <option value="5">5 – Very hard to turn</option>
+        </select>
+
+        <label for="everServiced">Has this phoropter ever received professional cleaning or servicing?</label>
+        <select id="everServiced">
+            <option value="yes">Yes</option>
+            <option value="no">No / Not sure</option>
+        </select>
+
+        <label for="dialSkip">Do any dials skip, lag, or feel off-center when rotated?</label>
+        <select id="dialSkip">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+        </select>
+
+        <label for="dialAlignment">Do the dial notations (like axis or cylinder) fail to line up exactly with their scale markings?</label>
+        <select id="dialAlignment">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+        </select>
+
+        <button type="submit">Evaluate My Phoropter</button>
+    </form>
+
+    <div id="result"></div>
+
+    <div class="fun-facts">
+        <h2>📚 Evidence-Based Insight</h2>
+        <p>🧫 <strong>Biofilm can form within 24–48 hours</strong> on moist surfaces inside phoropters. Once established, it is highly resistant to disinfectants and mechanical cleaning. <em>(CDC, NIH)</em></p>
+        <p>🔬 Optical instruments not properly maintained have been shown to harbor <strong>Staphylococcus aureus, Pseudomonas, and Candida</strong>, which pose serious infection risks in clinical environments.</p>
+        <p>📖 Source: Donlan RM, Costerton JW. "Biofilms: survival mechanisms of clinically relevant microorganisms." <em>Clin Microbiol Rev</em>. 2002 Apr;15(2):167-93.</p>
+    </div>
+
+    <script>
+        document.getElementById('unifiedForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const patients = parseInt(document.getElementById('patientsPerDay').value);
+            const months = parseInt(document.getElementById('monthsSinceService').value);
+            const clarity = parseInt(document.getElementById('lensClarity').value);
+            const dial = parseInt(document.getElementById('dialResistance').value);
+            const everServiced = document.getElementById('everServiced').value;
+            const dialSkip = document.getElementById('dialSkip').value;
+            const dialAlignment = document.getElementById('dialAlignment').value;
+
+            let riskScore = clarity + dial;
+            let baseInterval = patients >= 20 ? 6 : (patients >= 10 ? 9 : 12);
+            let recommendedMonths = baseInterval;
+
+            let output = "";
+
+            if (riskScore <= 4) {
+                output = "✅ Your phoropter appears to be in good condition. Based on clarity and mechanical feedback, routine service is recommended every " + baseInterval + " months.";
+            } else if (riskScore <= 7) {
+                output = "🟡 Some degradation in optics or dials. We recommend servicing within " + Math.min(baseInterval, 6) + " months.";
+                recommendedMonths = Math.min(recommendedMonths, 6);
+            } else if (riskScore <= 10) {
+                output = "🟠 Moderate mechanical or clarity issues detected. A professional service should be scheduled within 3–6 months.";
+                recommendedMonths = Math.min(recommendedMonths, 3);
+            } else {
+                output = "🔴 Significant contamination or resistance detected. Immediate professional servicing is strongly advised.";
+                recommendedMonths = 3;
+            }
+
+            if (everServiced === "no") {
+                output += " ⚠️ This unit has never been professionally serviced — urgent inspection is advised.";
+                recommendedMonths = Math.min(recommendedMonths, 6);
+            }
+
+            if (dialSkip === "yes") {
+                output += " ⚙️ Skipping or off-center dial movement indicates wear or spring fatigue.";
+                recommendedMonths = Math.min(recommendedMonths, 6);
+            }
+
+            if (dialAlignment === "yes") {
+                output += " 📝 Notation misalignment observed — please inform your technician to address during service.";
+            }
+
+            if (months > recommendedMonths) {
+                output += " ⏰ It has been " + months + " months since the last service — this exceeds the advised interval.";
+            } else {
+                output += " ⏱ Last service was " + months + " months ago. Next service is recommended within " + recommendedMonths + " months.";
+            }
+
+            output += "\n\n📚 Evidence supports rapid biofilm development inside optical equipment. Regular cleaning reduces contamination risk. (Donlan RM, Clin Microbiol Rev. 2002)";
+
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('result').innerText = output;
+        });
+    </script>
+</body>
+</html>
